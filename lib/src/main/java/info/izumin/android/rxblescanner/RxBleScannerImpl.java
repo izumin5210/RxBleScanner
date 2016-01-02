@@ -10,13 +10,13 @@ import rx.subjects.PublishSubject;
 /**
  * Created by izumin on 1/2/2016 AD.
  */
-abstract class AbstractRxBleScanner<T> {
+abstract class RxBleScannerImpl<T> {
 
     private final BluetoothManager manager;
     private final BluetoothAdapter adapter;
     private PublishSubject<T> subject;
 
-    protected AbstractRxBleScanner(Context context) {
+    protected RxBleScannerImpl(Context context) {
         manager = (BluetoothManager) context.getSystemService(Context.BLUETOOTH_SERVICE);
         adapter = manager.getAdapter();
     }
