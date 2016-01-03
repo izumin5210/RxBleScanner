@@ -1,8 +1,6 @@
 package info.izumin.android.rxblescanner;
 
 import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothManager;
-import android.content.Context;
 
 import rx.Observable;
 import rx.subjects.PublishSubject;
@@ -12,17 +10,21 @@ import rx.subjects.PublishSubject;
  */
 abstract class RxBleScannerImpl<T> {
 
-    private final BluetoothManager manager;
     private final BluetoothAdapter adapter;
     private PublishSubject<T> subject;
 
-    protected RxBleScannerImpl(Context context) {
-        manager = (BluetoothManager) context.getSystemService(Context.BLUETOOTH_SERVICE);
-        adapter = manager.getAdapter();
+    protected RxBleScannerImpl(BluetoothAdapter adapter) {
+        this.adapter = adapter;
     }
 
-    protected BluetoothManager getManager() {
-        return manager;
+    Observable<T> startScan() {
+        startScanImpl();
+        return getSubject();
+    }
+
+    void stopScan() {
+        getSubject().onCompleted();
+        stopScanImpl();
     }
 
     protected BluetoothAdapter getAdapter() {
@@ -40,9 +42,6 @@ abstract class RxBleScannerImpl<T> {
         getSubject().onNext(result);
     }
 
-    public void stopScan() {
-        getSubject().onCompleted();
-    }
-
-    public abstract Observable<T> startScan();
+    abstract void startScanImpl();
+    abstract void stopScanImpl();
 }
