@@ -1,10 +1,12 @@
 package info.izumin.android.rxblescanner;
 
+import android.annotation.TargetApi;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanResult;
 import android.bluetooth.le.ScanSettings;
+import android.os.Build;
 
 import java.util.List;
 
@@ -14,6 +16,7 @@ import rx.functions.Action1;
 /**
  * Created by izumin on 1/3/2016 AD.
  */
+@TargetApi(Build.VERSION_CODES.LOLLIPOP)
 class RxBleScannerL extends RxBleScannerImpl<ScanResult> {
 
     private BluetoothLeScanner scanner;
