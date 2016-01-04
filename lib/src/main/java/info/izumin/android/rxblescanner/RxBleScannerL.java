@@ -29,6 +29,16 @@ class RxBleScannerL extends RxBleScannerImpl<ScanResult> {
         super(adapter);
     }
 
+    Observable<ScanResult> startScan(List<ScanFilter> filters, ScanSettings settings) {
+        startScanImpl(filters, settings);
+        return getSubject();
+    }
+
+    protected void startScanImpl(List<ScanFilter> filters, ScanSettings settings) {
+        scanner = getAdapter().getBluetoothLeScanner();
+        scanner.startScan(filters, settings, scanCallback);
+    }
+
     @Override
     protected void startScanImpl(UUID... serviceUuids) {
         scanner = getAdapter().getBluetoothLeScanner();
