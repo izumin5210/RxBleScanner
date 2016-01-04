@@ -19,19 +19,26 @@ BluetoothAdapter adapter = manager.getAdapter();
 
 RxBleScanner scanner = new RxBleScanner(adapter);
 
-// for API level 22 later
+// for API level 21 later
 scanner.startScan()
   .subscribe((result) -> {
     // pass android.bluetooth.le.ScanResult instance
   });
 
 
-// for API level 21
+// for API level 18
 scanner.startScanJB()
   .subscribe((result) -> {
     // pass info.izumin.android.rxblescanner.ScanResultJB instance
   });
 ```
+
+RxBleScanner has following methods:
+
+* `Observable<ScanResult> startScan(List<ScanFilter>, ScanSettings)`: for API level 21 later
+* `Observable<ScanResult> startScan(UUID...): for API level 21 later`
+* `Observable<ScanResultJB> startScanJB(UUID...): for API level 18 later`
+* `void stopScan()`
 
 
 ## License
