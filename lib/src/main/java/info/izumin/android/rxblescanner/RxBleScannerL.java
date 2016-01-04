@@ -9,6 +9,7 @@ import android.bluetooth.le.ScanSettings;
 import android.os.Build;
 
 import java.util.List;
+import java.util.UUID;
 
 import rx.Observable;
 import rx.functions.Action1;
@@ -26,7 +27,7 @@ class RxBleScannerL extends RxBleScannerImpl<ScanResult> {
     }
 
     @Override
-    protected void startScanImpl() {
+    protected void startScanImpl(UUID... serviceUuids) {
         scanner = getAdapter().getBluetoothLeScanner();
         scanner.startScan(scanCallback);
     }

@@ -3,6 +3,8 @@ package info.izumin.android.rxblescanner;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 
+import java.util.UUID;
+
 /**
  * Created by izumin on 1/3/2016 AD.
  */
@@ -13,7 +15,7 @@ class RxBleScannerJB extends RxBleScannerImpl<ScanResultJB> {
     }
 
     @Override
-    protected void startScanImpl() {
+    void startScanImpl(UUID... serviceUuids) {
         getAdapter().startLeScan(scanCallback);
     }
 
