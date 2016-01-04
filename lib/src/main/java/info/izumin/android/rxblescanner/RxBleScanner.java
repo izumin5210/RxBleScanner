@@ -5,6 +5,8 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.le.ScanResult;
 import android.os.Build;
 
+import java.util.UUID;
+
 import rx.Observable;
 import rx.functions.Func1;
 
@@ -22,15 +24,15 @@ public class RxBleScanner {
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public Observable<ScanResult> startScan() {
+    public Observable<ScanResult> startScan(UUID... serviceUuids) {
         final RxBleScannerL scanner = new RxBleScannerL(adapter);
         scannerImpl = scanner;
-        return scanner.startScan();
+        return scanner.startScan(serviceUuids);
     }
 
-    public Observable<ScanResultJB> startScanJB() {
+    public Observable<ScanResultJB> startScanJB(UUID... serviceUuids) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            return startScan().map(new Func1<ScanResult, ScanResultJB>() {
+            return startScan(serviceUuids).map(new Func1<ScanResult, ScanResultJB>() {
                 @Override
                 public ScanResultJB call(ScanResult result) {
                     return new ScanResultJB(result);
@@ -39,7 +41,7 @@ public class RxBleScanner {
         } else {
             final RxBleScannerJB scanner = new RxBleScannerJB(adapter);
             scannerImpl = scanner;
-            return scanner.startScan();
+            return scanner.startScan(serviceUuids);
         }
     }
 
