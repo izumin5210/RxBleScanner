@@ -4,15 +4,18 @@ import android.annotation.TargetApi;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanCallback;
+import android.bluetooth.le.ScanFilter;
 import android.bluetooth.le.ScanResult;
 import android.bluetooth.le.ScanSettings;
 import android.os.Build;
+import android.os.ParcelUuid;
 
 import java.util.List;
 import java.util.UUID;
 
 import rx.Observable;
 import rx.functions.Action1;
+import rx.functions.Func1;
 
 /**
  * Created by izumin on 1/3/2016 AD.
@@ -29,7 +32,28 @@ class RxBleScannerL extends RxBleScannerImpl<ScanResult> {
     @Override
     protected void startScanImpl(UUID... serviceUuids) {
         scanner = getAdapter().getBluetoothLeScanner();
-        scanner.startScan(scanCallback);
+        if (serviceUuids.length == 0) {
+            scanner.startScan(scanCallback);
+        } else {
+            final List<ScanFilter> filters = Observable.from(serviceUuids)
+                    .map(new Func1<UUID, ParcelUuid>() {
+                        @Override
+                        public ParcelUuid call(UUID uuid) {
+                            return new ParcelUuid(uuid);
+                        }
+                    })
+                    .map(new Func1<ParcelUuid, ScanFilter>() {
+                        @Override
+                        public ScanFilter call(ParcelUuid uuid) {
+                            return new ScanFilter.Builder().setServiceUuid(uuid).build();
+                        }
+                    })
+                    .toList().toBlocking().first();
+            final ScanSettings settings = new ScanSettings.Builder()
+                    .setScanMode(ScanSettings.SCAN_MODE_BALANCED)
+                    .build();
+            scanner.startScan(filters, settings, scanCallback);
+        }
     }
 
     @Override
