@@ -2,8 +2,13 @@ package info.izumin.android.rxblescanner;
 
 import android.annotation.TargetApi;
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.le.ScanFilter;
 import android.bluetooth.le.ScanResult;
+import android.bluetooth.le.ScanSettings;
 import android.os.Build;
+
+import java.util.List;
+import java.util.UUID;
 
 import rx.Observable;
 import rx.functions.Func1;
@@ -22,25 +27,38 @@ public class RxBleScanner {
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public Observable<ScanResult> startScan() {
-        final RxBleScannerL scanner = new RxBleScannerL(adapter);
-        scannerImpl = scanner;
-        return scanner.startScan();
+    public Observable<ScanResult> startScan(List<ScanFilter> filters, ScanSettings settings) {
+        return getScannerImplL().startScan(filters, settings);
     }
 
-    public Observable<ScanResultJB> startScanJB() {
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    public Observable<ScanResult> startScan(UUID... serviceUuids) {
+        return getScannerImplL().startScan(serviceUuids);
+    }
+
+    public Observable<ScanResultJB> startScanJB(UUID... serviceUuids) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            return startScan().map(new Func1<ScanResult, ScanResultJB>() {
+            return startScan(serviceUuids).map(new Func1<ScanResult, ScanResultJB>() {
                 @Override
                 public ScanResultJB call(ScanResult result) {
                     return new ScanResultJB(result);
                 }
             });
         } else {
-            final RxBleScannerJB scanner = new RxBleScannerJB(adapter);
-            scannerImpl = scanner;
-            return scanner.startScan();
+            return getScannerImplJB().startScan(serviceUuids);
         }
+    }
+
+    private RxBleScannerL getScannerImplL() {
+        final RxBleScannerL scanner = new RxBleScannerL(adapter);
+        scannerImpl = scanner;
+        return scanner;
+    }
+
+    private RxBleScannerJB getScannerImplJB() {
+        final RxBleScannerJB scanner = new RxBleScannerJB(adapter);
+        scannerImpl = scanner;
+        return scanner;
     }
 
     public void stopScan() {

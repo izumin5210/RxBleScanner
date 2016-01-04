@@ -2,6 +2,8 @@ package info.izumin.android.rxblescanner;
 
 import android.bluetooth.BluetoothAdapter;
 
+import java.util.UUID;
+
 import rx.Observable;
 import rx.subjects.PublishSubject;
 
@@ -17,8 +19,8 @@ abstract class RxBleScannerImpl<T> {
         this.adapter = adapter;
     }
 
-    Observable<T> startScan() {
-        startScanImpl();
+    Observable<T> startScan(UUID... serviceUuids) {
+        startScanImpl(serviceUuids);
         return getSubject();
     }
 
@@ -42,6 +44,6 @@ abstract class RxBleScannerImpl<T> {
         getSubject().onNext(result);
     }
 
-    abstract void startScanImpl();
+    abstract void startScanImpl(UUID... serviceUuids);
     abstract void stopScanImpl();
 }
