@@ -100,6 +100,7 @@ class RxBleScannerL extends RxBleScannerImpl<ScanResult> {
         @Override
         public void onScanFailed(int errorCode) {
             getSubject().onError(new RxBleScannerException(errorCode));
+            stopScan();
         }
     };
 }
