@@ -33,6 +33,13 @@ scanner.startScanJB()
   });
 ```
 
+RxBleScanner has following methods:
+
+* `Observable<ScanResult> startScan(List<ScanFilter>, ScanSettings)`: for API level 21 later
+* `Observable<ScanResult> startScan(UUID...): for API level 21 later`
+* `Observable<ScanResultJB> startScanJB(UUID...): for API level 18 later`
+* `void stopScan()`
+
 
 ## License
 
