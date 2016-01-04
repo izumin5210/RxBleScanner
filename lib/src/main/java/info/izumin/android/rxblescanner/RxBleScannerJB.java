@@ -16,7 +16,11 @@ class RxBleScannerJB extends RxBleScannerImpl<ScanResultJB> {
 
     @Override
     void startScanImpl(UUID... serviceUuids) {
-        getAdapter().startLeScan(scanCallback);
+        if (serviceUuids.length == 0) {
+            getAdapter().startLeScan(scanCallback);
+        } else {
+            getAdapter().startLeScan(serviceUuids, scanCallback);
+        }
     }
 
     @Override
