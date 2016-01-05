@@ -1,4 +1,5 @@
 # RxBleScanner
+[![Build Status](https://travis-ci.org/izumin5210/RxBleScanner.svg)](https://travis-ci.org/izumin5210/RxBleScanner)
 
 ## Installation
 RxBleScanner depends on [RxJava](https://github.com/ReactiveX/RxJava). Add to your project build.gradle file:
