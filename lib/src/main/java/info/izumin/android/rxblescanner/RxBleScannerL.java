@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.UUID;
 
 import rx.Observable;
+import rx.Subscriber;
 import rx.functions.Action1;
 import rx.functions.Func1;
 
@@ -31,7 +32,12 @@ class RxBleScannerL extends RxBleScannerImpl<ScanResult> {
 
     Observable<ScanResult> startScan(List<ScanFilter> filters, ScanSettings settings) {
         startScanImpl(filters, settings);
-        return getSubject();
+        return Observable.create(new Observable.OnSubscribe<ScanResult>() {
+            @Override
+            public void call(Subscriber<? super ScanResult> subscriber) {
+                setSubscriber(subscriber);
+            }
+        });
     }
 
     protected void startScanImpl(List<ScanFilter> filters, ScanSettings settings) {
@@ -99,8 +105,7 @@ class RxBleScannerL extends RxBleScannerImpl<ScanResult> {
 
         @Override
         public void onScanFailed(int errorCode) {
-            getSubject().onError(new RxBleScannerException(errorCode));
-            stopScan();
+            onError(new RxBleScannerException(errorCode));
         }
     };
 }

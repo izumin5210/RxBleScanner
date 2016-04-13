@@ -5,7 +5,8 @@ import android.bluetooth.BluetoothAdapter;
 import java.util.UUID;
 
 import rx.Observable;
-import rx.subjects.PublishSubject;
+import rx.Subscriber;
+import rx.functions.Action0;
 
 /**
  * Created by izumin on 1/2/2016 AD.
@@ -13,7 +14,7 @@ import rx.subjects.PublishSubject;
 abstract class RxBleScannerImpl<T> {
 
     private final BluetoothAdapter adapter;
-    private PublishSubject<T> subject;
+    private Subscriber<? super T> subscriber;
 
     protected RxBleScannerImpl(BluetoothAdapter adapter) {
         this.adapter = adapter;
@@ -21,11 +22,16 @@ abstract class RxBleScannerImpl<T> {
 
     Observable<T> startScan(UUID... serviceUuids) {
         startScanImpl(serviceUuids);
-        return getSubject();
+        return Observable.create(new Observable.OnSubscribe<T>() {
+            @Override
+            public void call(Subscriber<? super T> subscriber) {
+                setSubscriber(subscriber);
+            }
+        });
     }
 
     void stopScan() {
-        getSubject().onCompleted();
+        subscriber.onCompleted();
         stopScanImpl();
     }
 
@@ -33,15 +39,17 @@ abstract class RxBleScannerImpl<T> {
         return adapter;
     }
 
-    protected PublishSubject<T> getSubject() {
-        if (subject == null || subject.hasCompleted() || subject.hasThrowable()) {
-            subject = PublishSubject.create();
-        }
-        return subject;
+    protected void setSubscriber(Subscriber<? super T> subscriber) {
+        this.subscriber = subscriber;
     }
 
     protected void onNext(T result) {
-        getSubject().onNext(result);
+        subscriber.onNext(result);
+    }
+
+    protected void onError(Throwable e) {
+        subscriber.onError(e);
+        stopScanImpl();
     }
 
     abstract void startScanImpl(UUID... serviceUuids);
