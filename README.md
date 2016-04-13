@@ -8,7 +8,7 @@ RxBleScanner depends on [RxJava](https://github.com/ReactiveX/RxJava). Add to yo
 ```groovy
 dependencies {
   compile 'io.reactivex:rxjava:1.1.0'
-  compile 'info.izumin.android:rxblescanner:0.1.0'
+  compile 'info.izumin.android:rxblescanner:0.2.1'
 }
 ```
 
