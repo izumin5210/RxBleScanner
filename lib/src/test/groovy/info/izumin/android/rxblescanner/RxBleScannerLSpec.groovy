@@ -49,10 +49,8 @@ class RxBleScannerLSpec extends Specification {
         scannerImpl.stopScan()
 
         then:
-        subscriber.assertCompleted()
-
-        then:
         1 * bleScanner.stopScan(scanCallback)
+        subscriber.assertCompleted()
     }
 
     def "when the scanner scans failure"() {
@@ -65,10 +63,8 @@ class RxBleScannerLSpec extends Specification {
         scanCallback.onScanFailed(ScanCallback.SCAN_FAILED_ALREADY_STARTED)
 
         then:
+        1 * bleScanner.stopScan(scanCallback)
         subscriber.assertError(RxBleScannerException.class)
         subscriber.onErrorEvents.get(0).getMessage() == RxBleScannerException.ErrorType.ALREADY_STARTED.name()
-
-        then:
-        1 * bleScanner.stopScan(scanCallback)
     }
 }
