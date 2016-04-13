@@ -15,6 +15,7 @@ import java.util.UUID;
 
 import rx.Observable;
 import rx.Subscriber;
+import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.functions.Func1;
 
@@ -36,6 +37,15 @@ class RxBleScannerL extends RxBleScannerImpl<ScanResult> {
             @Override
             public void call(Subscriber<? super ScanResult> subscriber) {
                 setSubscriber(subscriber);
+                setState(State.SCANNING);
+            }
+        }).doOnUnsubscribe(new Action0() {
+            @Override
+            public void call() {
+                if (getSubscriber().isUnsubscribed() && getState() != State.NOT_SCANNING) {
+                    setState(State.NOT_SCANNING);
+                    stopScanImpl();
+                }
             }
         });
     }

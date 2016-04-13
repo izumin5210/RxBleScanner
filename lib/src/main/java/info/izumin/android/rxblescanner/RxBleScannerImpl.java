@@ -13,8 +13,14 @@ import rx.functions.Action0;
  */
 abstract class RxBleScannerImpl<T> {
 
+    enum State {
+        SCANNING,
+        NOT_SCANNING
+    }
+
     private final BluetoothAdapter adapter;
     private Subscriber<? super T> subscriber;
+    private State state = State.NOT_SCANNING;
 
     protected RxBleScannerImpl(BluetoothAdapter adapter) {
         this.adapter = adapter;
@@ -26,11 +32,13 @@ abstract class RxBleScannerImpl<T> {
             @Override
             public void call(Subscriber<? super T> subscriber) {
                 setSubscriber(subscriber);
+                setState(State.SCANNING);
             }
         }).doOnUnsubscribe(new Action0() {
             @Override
             public void call() {
-                if (subscriber.isUnsubscribed()) {
+                if (getSubscriber().isUnsubscribed() && getState() != State.NOT_SCANNING) {
+                    setState(State.NOT_SCANNING);
                     stopScanImpl();
                 }
             }
@@ -38,6 +46,7 @@ abstract class RxBleScannerImpl<T> {
     }
 
     void stopScan() {
+        setState(State.NOT_SCANNING);
         subscriber.onCompleted();
         stopScanImpl();
     }
@@ -50,11 +59,24 @@ abstract class RxBleScannerImpl<T> {
         this.subscriber = subscriber;
     }
 
+    protected Subscriber<? super T> getSubscriber() {
+        return subscriber;
+    }
+
+    protected void setState(State state) {
+        this.state = state;
+    }
+
+    protected State getState() {
+        return state;
+    }
+
     protected void onNext(T result) {
         subscriber.onNext(result);
     }
 
     protected void onError(Throwable e) {
+        setState(State.NOT_SCANNING);
         subscriber.onError(e);
         stopScanImpl();
     }
