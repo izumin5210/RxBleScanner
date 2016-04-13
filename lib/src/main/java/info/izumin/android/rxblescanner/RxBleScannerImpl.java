@@ -27,6 +27,13 @@ abstract class RxBleScannerImpl<T> {
             public void call(Subscriber<? super T> subscriber) {
                 setSubscriber(subscriber);
             }
+        }).doOnUnsubscribe(new Action0() {
+            @Override
+            public void call() {
+                if (subscriber.isUnsubscribed()) {
+                    stopScanImpl();
+                }
+            }
         });
     }
 
